@@ -268,7 +268,7 @@ function App() {
                   </button>
                   
                   {copySuccess && (
-                    <span className="text-green-400 text-xs ml-2">{copySuccess}</span>
+                    <span className="text-success text-xs ml-2 font-medium">{copySuccess}</span>
                   )}
                 </div>
               )}
