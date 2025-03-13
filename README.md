@@ -48,11 +48,33 @@ yarn dev
 3. Enter text to test against in the "Test String" field
 4. View matches in real-time in the "Results" section
 
+## Favicons
+
+The project includes an SVG favicon that adapts to light and dark mode. To generate PNG versions of the favicon for various devices:
+
+1. Make sure you have the dependencies installed:
+```bash
+npm install
+```
+
+2. Run the favicon generation script:
+```bash
+npm run generate-favicons
+```
+
+This will create:
+- favicon.png (32x32)
+- apple-touch-icon.png (180x180)
+- icon-192.png (192x192)
+- icon-512.png (512x512)
+
+If you want to modify the favicon, edit the SVG file in `public/favicon.svg` and then run the generation script again.
+
 ## Built With
 
-- [React](https://reactjs.org/) - UI library
-- [Vite](https://vitejs.dev/) - Build tool
-- [Tailwind CSS v4](https://tailwindcss.com/) - CSS framework
+- [React](https://reactjs.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
 
 ## License
 
