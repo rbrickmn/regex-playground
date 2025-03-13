@@ -193,7 +193,7 @@ function App() {
         
         <div className="grid grid-cols-1 gap-6 mb-8">
           {/* Pattern Input */}
-          <div className="bg-slate-800 rounded-lg p-4">
+          <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex-1">
                 <label htmlFor="pattern" className="block text-sm font-medium mb-1">
@@ -205,7 +205,7 @@ function App() {
                   value={pattern}
                   onChange={(e) => setPattern(e.target.value)}
                   placeholder="Enter regex pattern..."
-                  className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                 />
               </div>
               
@@ -219,7 +219,7 @@ function App() {
                   value={flags}
                   onChange={(e) => setFlags(e.target.value)}
                   placeholder="g, i, m..."
-                  className="w-24 bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-24 bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
                 />
               </div>
             </div>
@@ -228,13 +228,13 @@ function App() {
               <button 
                 onClick={saveCurrentPattern}
                 disabled={!pattern}
-                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:opacity-50 rounded text-sm"
+                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:opacity-50 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
               >
                 Save Pattern
               </button>
               <button 
                 onClick={() => setShowExamples(!showExamples)}
-                className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm"
+                className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
               >
                 {showExamples ? "Hide Examples" : "Show Examples"}
               </button>
@@ -244,25 +244,25 @@ function App() {
                   <span className="text-sm">Copy as:</span>
                   <button 
                     onClick={() => copyToClipboard('raw')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs"
+                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
                   >
                     Raw
                   </button>
                   <button 
                     onClick={() => copyToClipboard('js')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs"
+                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
                   >
                     JavaScript
                   </button>
                   <button 
                     onClick={() => copyToClipboard('python')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs"
+                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
                   >
                     Python
                   </button>
                   <button 
                     onClick={() => copyToClipboard('php')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs"
+                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
                   >
                     PHP
                   </button>
@@ -283,18 +283,18 @@ function App() {
           
           {/* Examples and Saved Patterns */}
           {showExamples && (
-            <div className="bg-slate-800 rounded-lg p-4">
+            <div className="bg-slate-800 rounded-lg p-4 shadow-lg animate-fadeIn">
               <h2 className="text-xl font-semibold mb-3">Example Patterns</h2>
               <div className="grid grid-cols-1 gap-2">
                 {EXAMPLE_PATTERNS.map((example, index) => (
-                  <div key={index} className="bg-slate-700 p-2 rounded flex justify-between items-center">
+                  <div key={index} className="bg-slate-700 p-2 rounded flex justify-between items-center hover:bg-slate-650 transition-colors duration-200">
                     <div>
                       <div className="font-medium">{example.name}</div>
                       <div className="text-sm text-slate-400 font-mono">{example.pattern}</div>
                     </div>
                     <button 
                       onClick={() => loadPattern(example)}
-                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+                      className="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
                     >
                       Load
                     </button>
@@ -307,7 +307,7 @@ function App() {
                   <h2 className="text-xl font-semibold mt-6 mb-3">Your Saved Patterns</h2>
                   <div className="grid grid-cols-1 gap-2">
                     {savedPatterns.map((saved, index) => (
-                      <div key={index} className="bg-slate-700 p-2 rounded flex justify-between items-center">
+                      <div key={index} className="bg-slate-700 p-2 rounded flex justify-between items-center hover:bg-slate-650 transition-colors duration-200">
                         <div>
                           <div className="font-medium">{saved.name}</div>
                           <div className="text-sm text-slate-400 font-mono">{saved.pattern}</div>
@@ -315,13 +315,13 @@ function App() {
                         <div className="flex gap-2">
                           <button 
                             onClick={() => loadPattern(saved)}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+                            className="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
                           >
                             Load
                           </button>
                           <button 
                             onClick={() => deletePattern(index)}
-                            className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded text-sm"
+                            className="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
                           >
                             Delete
                           </button>
@@ -335,7 +335,7 @@ function App() {
           )}
           
           {/* Test String Input */}
-          <div className="bg-slate-800 rounded-lg p-4">
+          <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
             <label htmlFor="testString" className="block text-sm font-medium mb-1">
               Test String
             </label>
@@ -345,13 +345,13 @@ function App() {
               onChange={(e) => setTestString(e.target.value)}
               placeholder="Enter text to test against the regex..."
               rows={5}
-              className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
             />
           </div>
           
           {/* Highlighted Text */}
           {testString && (
-            <div className="bg-slate-800 rounded-lg p-4">
+            <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 animate-fadeIn">
               <h2 className="text-xl font-semibold mb-3">Highlighted Matches</h2>
               <div 
                 className="bg-slate-700 p-3 rounded whitespace-pre-wrap font-mono"
@@ -361,7 +361,7 @@ function App() {
           )}
           
           {/* Results */}
-          <div className="bg-slate-800 rounded-lg p-4">
+          <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
             <h2 className="text-xl font-semibold mb-3">Results</h2>
             
             {matches.length === 0 ? (
@@ -373,7 +373,7 @@ function App() {
                 </div>
                 
                 {matches.map((match, index) => (
-                  <div key={index} className="bg-slate-700 rounded p-3">
+                  <div key={index} className="bg-slate-700 rounded p-3 transition-all duration-200 hover:translate-x-1">
                     <div className="flex justify-between mb-2">
                       <span className="font-medium">Match {index + 1}</span>
                       <span className="text-sm text-slate-400">Index: {match.index}</span>
@@ -406,7 +406,7 @@ function App() {
         </div>
         
         {/* Regex Cheat Sheet */}
-        <div className="bg-slate-800 rounded-lg p-4">
+        <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
           <h2 className="text-xl font-semibold mb-3">Regex Cheat Sheet</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
