@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
 // Predefined example patterns
 const EXAMPLE_PATTERNS = [
@@ -34,6 +34,15 @@ const EXAMPLE_PATTERNS = [
   }
 ];
 
+// Add a debounce utility function at the top of the file
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
+
 function App() {
   const [pattern, setPattern] = useState("");
   const [flags, setFlags] = useState("g");
@@ -50,6 +59,32 @@ function App() {
   const [themeMode, setThemeMode] = useState(
     window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   );
+  
+  // Create refs for input elements
+  const patternInputRef = useRef(null);
+  const flagsInputRef = useRef(null);
+  const testStringInputRef = useRef(null);
+
+  // Memoize event handlers
+  const handlePatternChange = useCallback((e) => setPattern(e.target.value), []);
+  const handleFlagsChange = useCallback((e) => setFlags(e.target.value), []);
+  const handleTestStringChange = useCallback((e) => setTestString(e.target.value), []);
+
+  // Add debounced state variables for performance
+  const [debouncedPattern, setDebouncedPattern] = useState("");
+  const [debouncedFlags, setDebouncedFlags] = useState("g");
+  const [debouncedTestString, setDebouncedTestString] = useState("");
+
+  // Debounce the input changes
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedPattern(pattern);
+      setDebouncedFlags(flags);
+      setDebouncedTestString(testString);
+    }, 300); // 300ms debounce time
+    
+    return () => clearTimeout(timerId);
+  }, [pattern, flags, testString]);
 
   // Listen for theme changes
   useEffect(() => {
@@ -58,26 +93,9 @@ function App() {
     const handleThemeChange = (e) => {
       setThemeMode(e.matches ? 'dark' : 'light');
       
-      // Force re-render of input elements to update placeholder colors
-      const inputs = document.querySelectorAll('.input-field');
-      inputs.forEach(input => {
-        // Clone and replace the element to force a re-render
-        const parent = input.parentNode;
-        const clone = input.cloneNode(true);
-        parent.replaceChild(clone, input);
-        
-        // Restore event listeners and values
-        if (clone.id === 'pattern') {
-          clone.value = pattern;
-          clone.addEventListener('input', (e) => setPattern(e.target.value));
-        } else if (clone.id === 'flags') {
-          clone.value = flags;
-          clone.addEventListener('input', (e) => setFlags(e.target.value));
-        } else if (clone.id === 'testString') {
-          clone.value = testString;
-          clone.addEventListener('input', (e) => setTestString(e.target.value));
-        }
-      });
+      // Force a re-render of the component to update placeholder colors
+      // This is more React-friendly than direct DOM manipulation
+      document.documentElement.style.setProperty('--force-refresh', Date.now());
     };
     
     mediaQuery.addEventListener('change', handleThemeChange);
@@ -85,29 +103,31 @@ function App() {
     return () => {
       mediaQuery.removeEventListener('change', handleThemeChange);
     };
-  }, [pattern, flags, testString]);
+  }, []);
 
   // Save patterns to localStorage when they change
   useEffect(() => {
     localStorage.setItem("savedPatterns", JSON.stringify(savedPatterns));
   }, [savedPatterns]);
 
-  useEffect(() => {
-    if (!pattern || !testString) {
-      setMatches([]);
-      setError(null);
-      setHighlightedText(testString);
-      return;
+  // Memoize regex results to prevent unnecessary recalculations
+  const { computedMatches, computedError, computedHighlightedText } = useMemo(() => {
+    if (!debouncedPattern || !debouncedTestString) {
+      return { 
+        computedMatches: [], 
+        computedError: null, 
+        computedHighlightedText: debouncedTestString 
+      };
     }
 
     try {
-      const regex = new RegExp(pattern, flags);
+      const regex = new RegExp(debouncedPattern, debouncedFlags);
       const results = [];
       let match;
 
-      if (flags.includes("g")) {
+      if (debouncedFlags.includes("g")) {
         // Global flag - find all matches
-        while ((match = regex.exec(testString)) !== null) {
+        while ((match = regex.exec(debouncedTestString)) !== null) {
           results.push({
             fullMatch: match[0],
             groups: match.slice(1),
@@ -117,7 +137,7 @@ function App() {
         }
       } else {
         // Non-global - find first match only
-        match = regex.exec(testString);
+        match = regex.exec(debouncedTestString);
         if (match) {
           results.push({
             fullMatch: match[0],
@@ -127,11 +147,10 @@ function App() {
           });
         }
       }
-
-      setMatches(results);
-      setError(null);
       
       // Create highlighted text
+      let highlightedText = debouncedTestString;
+      
       if (results.length > 0) {
         // Sort matches by index to ensure proper highlighting
         const sortedMatches = [...results].sort((a, b) => a.index - b.index);
@@ -141,7 +160,7 @@ function App() {
         
         sortedMatches.forEach((match) => {
           // Add text before the match
-          highlighted += testString.substring(lastIndex, match.index);
+          highlighted += debouncedTestString.substring(lastIndex, match.index);
           
           // Add the highlighted match
           highlighted += `<span class="match-highlight">${match.fullMatch}</span>`;
@@ -151,18 +170,31 @@ function App() {
         });
         
         // Add any remaining text
-        highlighted += testString.substring(lastIndex);
+        highlighted += debouncedTestString.substring(lastIndex);
         
-        setHighlightedText(highlighted);
-      } else {
-        setHighlightedText(testString);
+        highlightedText = highlighted;
       }
+
+      return { 
+        computedMatches: results, 
+        computedError: null, 
+        computedHighlightedText: highlightedText 
+      };
     } catch (err) {
-      setError(err.message);
-      setMatches([]);
-      setHighlightedText(testString);
+      return { 
+        computedMatches: [], 
+        computedError: err.message, 
+        computedHighlightedText: debouncedTestString 
+      };
     }
-  }, [pattern, flags, testString]);
+  }, [debouncedPattern, debouncedFlags, debouncedTestString]);
+
+  // Update state with memoized values
+  useEffect(() => {
+    setMatches(computedMatches);
+    setError(computedError);
+    setHighlightedText(computedHighlightedText);
+  }, [computedMatches, computedError, computedHighlightedText]);
 
   const saveCurrentPattern = () => {
     if (!pattern) return;
@@ -195,7 +227,8 @@ function App() {
     }
   };
 
-  const copyToClipboard = (format) => {
+  // Memoize the copyToClipboard function
+  const copyToClipboard = useCallback((format) => {
     let textToCopy = "";
     
     switch (format) {
@@ -223,7 +256,7 @@ function App() {
         setCopySuccess("Copy failed");
         setTimeout(() => setCopySuccess(""), 2000);
       });
-  };
+  }, [pattern, flags]);
 
   return (
     <div className="min-h-screen bg-theme text-theme p-6">
@@ -242,9 +275,10 @@ function App() {
                   id="pattern"
                   type="text"
                   value={pattern}
-                  onChange={(e) => setPattern(e.target.value)}
+                  onChange={handlePatternChange}
                   placeholder="Enter regex pattern..."
                   className="input-field w-full"
+                  ref={patternInputRef}
                 />
               </div>
               
@@ -256,9 +290,10 @@ function App() {
                   id="flags"
                   type="text"
                   value={flags}
-                  onChange={(e) => setFlags(e.target.value)}
+                  onChange={handleFlagsChange}
                   placeholder="g, i, m..."
                   className="input-field w-24"
+                  ref={flagsInputRef}
                 />
               </div>
             </div>
@@ -381,10 +416,11 @@ function App() {
             <textarea
               id="testString"
               value={testString}
-              onChange={(e) => setTestString(e.target.value)}
+              onChange={handleTestStringChange}
               placeholder="Enter text to test against the regex..."
               rows={5}
               className="input-field w-full"
+              ref={testStringInputRef}
             />
           </div>
           
@@ -488,6 +524,13 @@ function App() {
             </div>
           </div>
         </div>
+        
+        {/* Footer */}
+        <footer className="mt-8 text-center text-sm text-muted">
+          <p>
+            Created by <a href="https://github.com/rbrickmn" target="_blank" rel="noopener noreferrer" className="text-info hover:underline">Riley Brickman</a> | © {new Date().getFullYear()}
+          </p>
+        </footer>
       </div>
     </div>
   );
