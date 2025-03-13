@@ -105,7 +105,7 @@ function App() {
           highlighted += testString.substring(lastIndex, match.index);
           
           // Add the highlighted match
-          highlighted += `<span class="bg-green-500/30 text-white font-medium">${match.fullMatch}</span>`;
+          highlighted += `<span class="match-highlight">${match.fullMatch}</span>`;
           
           // Update the last index
           lastIndex = match.index + match.fullMatch.length;
@@ -187,13 +187,13 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-6">
+    <div className="min-h-screen bg-theme text-theme p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6 text-center">Regex Playground</h1>
         
         <div className="grid grid-cols-1 gap-6 mb-8">
           {/* Pattern Input */}
-          <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
+          <div className="card">
             <div className="flex items-center gap-4 mb-4">
               <div className="flex-1">
                 <label htmlFor="pattern" className="block text-sm font-medium mb-1">
@@ -205,7 +205,7 @@ function App() {
                   value={pattern}
                   onChange={(e) => setPattern(e.target.value)}
                   placeholder="Enter regex pattern..."
-                  className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                  className="input-field w-full"
                 />
               </div>
               
@@ -219,7 +219,7 @@ function App() {
                   value={flags}
                   onChange={(e) => setFlags(e.target.value)}
                   placeholder="g, i, m..."
-                  className="w-24 bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                  className="input-field w-24"
                 />
               </div>
             </div>
@@ -228,13 +228,13 @@ function App() {
               <button 
                 onClick={saveCurrentPattern}
                 disabled={!pattern}
-                className="px-3 py-1 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-600 disabled:opacity-50 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
+                className="btn btn-primary disabled:opacity-50 disabled:bg-muted"
               >
                 Save Pattern
               </button>
               <button 
                 onClick={() => setShowExamples(!showExamples)}
-                className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
+                className="btn btn-secondary"
               >
                 {showExamples ? "Hide Examples" : "Show Examples"}
               </button>
@@ -244,25 +244,25 @@ function App() {
                   <span className="text-sm">Copy as:</span>
                   <button 
                     onClick={() => copyToClipboard('raw')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
+                    className="btn-small"
                   >
                     Raw
                   </button>
                   <button 
                     onClick={() => copyToClipboard('js')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
+                    className="btn-small"
                   >
                     JavaScript
                   </button>
                   <button 
                     onClick={() => copyToClipboard('python')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
+                    className="btn-small"
                   >
                     Python
                   </button>
                   <button 
                     onClick={() => copyToClipboard('php')}
-                    className="px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs cursor-pointer transition-colors duration-200 hover:shadow-md"
+                    className="btn-small"
                   >
                     PHP
                   </button>
@@ -275,7 +275,7 @@ function App() {
             </div>
             
             {error && (
-              <div className="text-red-400 text-sm mt-2">
+              <div className="text-danger text-sm mt-2">
                 Error: {error}
               </div>
             )}
@@ -283,18 +283,18 @@ function App() {
           
           {/* Examples and Saved Patterns */}
           {showExamples && (
-            <div className="bg-slate-800 rounded-lg p-4 shadow-lg animate-fadeIn">
+            <div className="card animate-fadeIn">
               <h2 className="text-xl font-semibold mb-3">Example Patterns</h2>
               <div className="grid grid-cols-1 gap-2">
                 {EXAMPLE_PATTERNS.map((example, index) => (
-                  <div key={index} className="bg-slate-700 p-2 rounded flex justify-between items-center hover:bg-slate-650 transition-colors duration-200">
+                  <div key={index} className="list-item">
                     <div>
                       <div className="font-medium">{example.name}</div>
-                      <div className="text-sm text-slate-400 font-mono">{example.pattern}</div>
+                      <div className="text-sm text-muted font-mono">{example.pattern}</div>
                     </div>
                     <button 
                       onClick={() => loadPattern(example)}
-                      className="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
+                      className="btn btn-primary"
                     >
                       Load
                     </button>
@@ -307,21 +307,21 @@ function App() {
                   <h2 className="text-xl font-semibold mt-6 mb-3">Your Saved Patterns</h2>
                   <div className="grid grid-cols-1 gap-2">
                     {savedPatterns.map((saved, index) => (
-                      <div key={index} className="bg-slate-700 p-2 rounded flex justify-between items-center hover:bg-slate-650 transition-colors duration-200">
+                      <div key={index} className="list-item">
                         <div>
                           <div className="font-medium">{saved.name}</div>
-                          <div className="text-sm text-slate-400 font-mono">{saved.pattern}</div>
+                          <div className="text-sm text-muted font-mono">{saved.pattern}</div>
                         </div>
                         <div className="flex gap-2">
                           <button 
                             onClick={() => loadPattern(saved)}
-                            className="px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
+                            className="btn btn-primary"
                           >
                             Load
                           </button>
                           <button 
                             onClick={() => deletePattern(index)}
-                            className="px-3 py-1 bg-red-600 hover:bg-red-500 rounded text-sm cursor-pointer transition-colors duration-200 hover:shadow-md"
+                            className="btn btn-danger"
                           >
                             Delete
                           </button>
@@ -335,7 +335,7 @@ function App() {
           )}
           
           {/* Test String Input */}
-          <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
+          <div className="card">
             <label htmlFor="testString" className="block text-sm font-medium mb-1">
               Test String
             </label>
@@ -345,53 +345,53 @@ function App() {
               onChange={(e) => setTestString(e.target.value)}
               placeholder="Enter text to test against the regex..."
               rows={5}
-              className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+              className="input-field w-full"
             />
           </div>
           
           {/* Highlighted Text */}
           {testString && (
-            <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 animate-fadeIn">
+            <div className="card animate-fadeIn">
               <h2 className="text-xl font-semibold mb-3">Highlighted Matches</h2>
               <div 
-                className="bg-slate-700 p-3 rounded whitespace-pre-wrap font-mono"
+                className="bg-input p-3 rounded whitespace-pre-wrap font-mono"
                 dangerouslySetInnerHTML={{ __html: highlightedText }}
               />
             </div>
           )}
           
           {/* Results */}
-          <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
+          <div className="card">
             <h2 className="text-xl font-semibold mb-3">Results</h2>
             
             {matches.length === 0 ? (
-              <p className="text-slate-400">No matches found</p>
+              <p className="text-muted">No matches found</p>
             ) : (
               <div className="space-y-4">
-                <div className="text-sm text-slate-300 mb-2">
+                <div className="text-sm text-secondary mb-2">
                   Found {matches.length} match{matches.length !== 1 ? "es" : ""}
                 </div>
                 
                 {matches.map((match, index) => (
-                  <div key={index} className="bg-slate-700 rounded p-3 transition-all duration-200 hover:translate-x-1">
+                  <div key={index} className="result-item">
                     <div className="flex justify-between mb-2">
                       <span className="font-medium">Match {index + 1}</span>
-                      <span className="text-sm text-slate-400">Index: {match.index}</span>
+                      <span className="text-sm text-muted">Index: {match.index}</span>
                     </div>
                     
                     <div className="mb-2">
-                      <div className="text-sm text-slate-400 mb-1">Full Match:</div>
-                      <div className="bg-slate-600 p-2 rounded font-mono text-green-400">
+                      <div className="text-sm text-muted mb-1">Full Match:</div>
+                      <div className="code-block text-success">
                         {match.fullMatch}
                       </div>
                     </div>
                     
                     {match.groups.length > 0 && (
                       <div>
-                        <div className="text-sm text-slate-400 mb-1">Capture Groups:</div>
+                        <div className="text-sm text-muted mb-1">Capture Groups:</div>
                         <div className="space-y-2">
                           {match.groups.map((group, groupIndex) => (
-                            <div key={groupIndex} className="bg-slate-600 p-2 rounded font-mono text-blue-400">
+                            <div key={groupIndex} className="code-block text-info">
                               Group {groupIndex + 1}: {group}
                             </div>
                           ))}
@@ -406,45 +406,45 @@ function App() {
         </div>
         
         {/* Regex Cheat Sheet */}
-        <div className="bg-slate-800 rounded-lg p-4 shadow-lg transition-all duration-300 hover:shadow-xl">
+        <div className="card">
           <h2 className="text-xl font-semibold mb-3">Regex Cheat Sheet</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <h3 className="font-medium text-blue-400 mb-1">Character Classes</h3>
+              <h3 className="font-medium text-info mb-1">Character Classes</h3>
               <ul className="space-y-1">
-                <li><code className="bg-slate-700 px-1 rounded">\d</code> - Digit (0-9)</li>
-                <li><code className="bg-slate-700 px-1 rounded">\w</code> - Word character (a-z, A-Z, 0-9, _)</li>
-                <li><code className="bg-slate-700 px-1 rounded">\s</code> - Whitespace</li>
-                <li><code className="bg-slate-700 px-1 rounded">.</code> - Any character except newline</li>
+                <li><code className="code-inline">\d</code> - Digit (0-9)</li>
+                <li><code className="code-inline">\w</code> - Word character (a-z, A-Z, 0-9, _)</li>
+                <li><code className="code-inline">\s</code> - Whitespace</li>
+                <li><code className="code-inline">.</code> - Any character except newline</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium text-blue-400 mb-1">Quantifiers</h3>
+              <h3 className="font-medium text-info mb-1">Quantifiers</h3>
               <ul className="space-y-1">
-                <li><code className="bg-slate-700 px-1 rounded">*</code> - 0 or more</li>
-                <li><code className="bg-slate-700 px-1 rounded">+</code> - 1 or more</li>
-                <li><code className="bg-slate-700 px-1 rounded">?</code> - 0 or 1</li>
-                <li><code className="bg-slate-700 px-1 rounded">{"{n}"}</code> - Exactly n times</li>
-                <li><code className="bg-slate-700 px-1 rounded">{"{n,m}"}</code> - Between n and m times</li>
+                <li><code className="code-inline">*</code> - 0 or more</li>
+                <li><code className="code-inline">+</code> - 1 or more</li>
+                <li><code className="code-inline">?</code> - 0 or 1</li>
+                <li><code className="code-inline">{"{n}"}</code> - Exactly n times</li>
+                <li><code className="code-inline">{"{n,m}"}</code> - Between n and m times</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium text-blue-400 mb-1">Flags</h3>
+              <h3 className="font-medium text-info mb-1">Flags</h3>
               <ul className="space-y-1">
-                <li><code className="bg-slate-700 px-1 rounded">g</code> - Global (find all matches)</li>
-                <li><code className="bg-slate-700 px-1 rounded">i</code> - Case-insensitive</li>
-                <li><code className="bg-slate-700 px-1 rounded">m</code> - Multiline</li>
-                <li><code className="bg-slate-700 px-1 rounded">s</code> - Dot matches newlines</li>
+                <li><code className="code-inline">g</code> - Global (find all matches)</li>
+                <li><code className="code-inline">i</code> - Case-insensitive</li>
+                <li><code className="code-inline">m</code> - Multiline</li>
+                <li><code className="code-inline">s</code> - Dot matches newlines</li>
               </ul>
             </div>
             <div>
-              <h3 className="font-medium text-blue-400 mb-1">Groups & Assertions</h3>
+              <h3 className="font-medium text-info mb-1">Groups & Assertions</h3>
               <ul className="space-y-1">
-                <li><code className="bg-slate-700 px-1 rounded">(abc)</code> - Capture group</li>
-                <li><code className="bg-slate-700 px-1 rounded">(?:abc)</code> - Non-capturing group</li>
-                <li><code className="bg-slate-700 px-1 rounded">^</code> - Start of string/line</li>
-                <li><code className="bg-slate-700 px-1 rounded">$</code> - End of string/line</li>
-                <li><code className="bg-slate-700 px-1 rounded">\b</code> - Word boundary</li>
+                <li><code className="code-inline">(abc)</code> - Capture group</li>
+                <li><code className="code-inline">(?:abc)</code> - Non-capturing group</li>
+                <li><code className="code-inline">^</code> - Start of string/line</li>
+                <li><code className="code-inline">$</code> - End of string/line</li>
+                <li><code className="code-inline">\b</code> - Word boundary</li>
               </ul>
             </div>
           </div>
