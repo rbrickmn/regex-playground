@@ -47,6 +47,45 @@ function App() {
   });
   const [showExamples, setShowExamples] = useState(false);
   const [copySuccess, setCopySuccess] = useState("");
+  const [themeMode, setThemeMode] = useState(
+    window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  );
+
+  // Listen for theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleThemeChange = (e) => {
+      setThemeMode(e.matches ? 'dark' : 'light');
+      
+      // Force re-render of input elements to update placeholder colors
+      const inputs = document.querySelectorAll('.input-field');
+      inputs.forEach(input => {
+        // Clone and replace the element to force a re-render
+        const parent = input.parentNode;
+        const clone = input.cloneNode(true);
+        parent.replaceChild(clone, input);
+        
+        // Restore event listeners and values
+        if (clone.id === 'pattern') {
+          clone.value = pattern;
+          clone.addEventListener('input', (e) => setPattern(e.target.value));
+        } else if (clone.id === 'flags') {
+          clone.value = flags;
+          clone.addEventListener('input', (e) => setFlags(e.target.value));
+        } else if (clone.id === 'testString') {
+          clone.value = testString;
+          clone.addEventListener('input', (e) => setTestString(e.target.value));
+        }
+      });
+    };
+    
+    mediaQuery.addEventListener('change', handleThemeChange);
+    
+    return () => {
+      mediaQuery.removeEventListener('change', handleThemeChange);
+    };
+  }, [pattern, flags, testString]);
 
   // Save patterns to localStorage when they change
   useEffect(() => {
