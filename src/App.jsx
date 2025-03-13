@@ -260,270 +260,293 @@ function App() {
 
   return (
     <div className="min-h-screen bg-theme text-theme p-6">
+      {/* Skip to main content link for keyboard users */}
+      <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:p-4 focus:bg-accent-color focus:text-white focus:rounded">
+        Skip to main content
+      </a>
+      
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-center">Regex Playground</h1>
+        <header>
+          <h1 className="text-3xl font-bold mb-6 text-center">Regex Playground</h1>
+        </header>
         
-        <div className="grid grid-cols-1 gap-6 mb-8">
-          {/* Pattern Input */}
-          <div className="card">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="flex-1">
-                <label htmlFor="pattern" className="block text-sm font-medium mb-1">
-                  Pattern
-                </label>
-                <input
-                  id="pattern"
-                  type="text"
-                  value={pattern}
-                  onChange={handlePatternChange}
-                  placeholder="Enter regex pattern..."
-                  className="input-field w-full"
-                  ref={patternInputRef}
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="flags" className="block text-sm font-medium mb-1">
-                  Flags
-                </label>
-                <input
-                  id="flags"
-                  type="text"
-                  value={flags}
-                  onChange={handleFlagsChange}
-                  placeholder="g, i, m..."
-                  className="input-field w-24"
-                  ref={flagsInputRef}
-                />
-              </div>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 mt-2">
-              <button 
-                onClick={saveCurrentPattern}
-                disabled={!pattern}
-                className="btn btn-primary disabled:opacity-50 disabled:bg-muted"
-              >
-                Save Pattern
-              </button>
-              <button 
-                onClick={() => setShowExamples(!showExamples)}
-                className="btn btn-secondary"
-              >
-                {showExamples ? "Hide Examples" : "Show Examples"}
-              </button>
-              
-              {pattern && (
-                <div className="flex-1 flex items-center gap-2 justify-end">
-                  <span className="text-sm">Copy as:</span>
-                  <button 
-                    onClick={() => copyToClipboard('raw')}
-                    className="btn-small"
-                  >
-                    Raw
-                  </button>
-                  <button 
-                    onClick={() => copyToClipboard('js')}
-                    className="btn-small"
-                  >
-                    JavaScript
-                  </button>
-                  <button 
-                    onClick={() => copyToClipboard('python')}
-                    className="btn-small"
-                  >
-                    Python
-                  </button>
-                  <button 
-                    onClick={() => copyToClipboard('php')}
-                    className="btn-small"
-                  >
-                    PHP
-                  </button>
-                  
-                  {copySuccess && (
-                    <span className="text-success text-xs ml-2 font-medium">{copySuccess}</span>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            {error && (
-              <div className="text-danger text-sm mt-2">
-                Error: {error}
-              </div>
-            )}
-          </div>
-          
-          {/* Examples and Saved Patterns */}
-          {showExamples && (
-            <div className="card animate-fadeIn">
-              <h2 className="text-xl font-semibold mb-3">Example Patterns</h2>
-              <div className="grid grid-cols-1 gap-2">
-                {EXAMPLE_PATTERNS.map((example, index) => (
-                  <div key={index} className="list-item">
-                    <div>
-                      <div className="font-medium">{example.name}</div>
-                      <div className="text-sm text-muted font-mono">{example.pattern}</div>
-                    </div>
-                    <button 
-                      onClick={() => loadPattern(example)}
-                      className="btn btn-primary"
-                    >
-                      Load
-                    </button>
-                  </div>
-                ))}
-              </div>
-              
-              {savedPatterns.length > 0 && (
-                <>
-                  <h2 className="text-xl font-semibold mt-6 mb-3">Your Saved Patterns</h2>
-                  <div className="grid grid-cols-1 gap-2">
-                    {savedPatterns.map((saved, index) => (
-                      <div key={index} className="list-item">
-                        <div>
-                          <div className="font-medium">{saved.name}</div>
-                          <div className="text-sm text-muted font-mono">{saved.pattern}</div>
-                        </div>
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => loadPattern(saved)}
-                            className="btn btn-primary"
-                          >
-                            Load
-                          </button>
-                          <button 
-                            onClick={() => deletePattern(index)}
-                            className="btn btn-danger"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-          
-          {/* Test String Input */}
-          <div className="card">
-            <label htmlFor="testString" className="block text-sm font-medium mb-1">
-              Test String
-            </label>
-            <textarea
-              id="testString"
-              value={testString}
-              onChange={handleTestStringChange}
-              placeholder="Enter text to test against the regex..."
-              rows={5}
-              className="input-field w-full"
-              ref={testStringInputRef}
-            />
-          </div>
-          
-          {/* Highlighted Text */}
-          {testString && (
-            <div className="card animate-fadeIn">
-              <h2 className="text-xl font-semibold mb-3">Highlighted Matches</h2>
-              <div 
-                className="bg-input p-3 rounded whitespace-pre-wrap font-mono"
-                dangerouslySetInnerHTML={{ __html: highlightedText }}
-              />
-            </div>
-          )}
-          
-          {/* Results */}
-          <div className="card">
-            <h2 className="text-xl font-semibold mb-3">Results</h2>
-            
-            {matches.length === 0 ? (
-              <p className="text-muted">No matches found</p>
-            ) : (
-              <div className="space-y-4">
-                <div className="text-sm text-secondary mb-2">
-                  Found {matches.length} match{matches.length !== 1 ? "es" : ""}
+        <main id="main-content">
+          <div className="grid grid-cols-1 gap-6 mb-8">
+            {/* Pattern Input */}
+            <section className="card" aria-labelledby="pattern-section-title">
+              <h2 id="pattern-section-title" className="sr-only">Regex Pattern Input</h2>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex-1">
+                  <label htmlFor="pattern" className="block text-sm font-medium mb-1">
+                    Pattern
+                  </label>
+                  <input
+                    id="pattern"
+                    type="text"
+                    value={pattern}
+                    onChange={handlePatternChange}
+                    placeholder="Enter regex pattern..."
+                    className="input-field w-full"
+                    ref={patternInputRef}
+                    aria-describedby={error ? "pattern-error" : undefined}
+                  />
                 </div>
                 
-                {matches.map((match, index) => (
-                  <div key={index} className="result-item">
-                    <div className="flex justify-between mb-2">
-                      <span className="font-medium">Match {index + 1}</span>
-                      <span className="text-sm text-muted">Index: {match.index}</span>
-                    </div>
+                <div>
+                  <label htmlFor="flags" className="block text-sm font-medium mb-1">
+                    Flags
+                  </label>
+                  <input
+                    id="flags"
+                    type="text"
+                    value={flags}
+                    onChange={handleFlagsChange}
+                    placeholder="g, i, m..."
+                    className="input-field w-24"
+                    ref={flagsInputRef}
+                    aria-describedby="flags-help"
+                  />
+                  <span id="flags-help" className="sr-only">Valid flags are g for global, i for case insensitive, m for multiline, and s for dot matches newlines</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mt-2">
+                <button 
+                  onClick={saveCurrentPattern}
+                  disabled={!pattern}
+                  className="btn btn-primary disabled:opacity-50 disabled:bg-muted"
+                  aria-disabled={!pattern}
+                >
+                  Save Pattern
+                </button>
+                <button 
+                  onClick={() => setShowExamples(!showExamples)}
+                  className="btn btn-secondary"
+                  aria-expanded={showExamples}
+                  aria-controls="examples-section"
+                >
+                  {showExamples ? "Hide Examples" : "Show Examples"}
+                </button>
+                
+                {pattern && (
+                  <div className="flex-1 flex items-center gap-2 justify-end" role="group" aria-label="Copy pattern in different formats">
+                    <span className="text-sm">Copy as:</span>
+                    <button 
+                      onClick={() => copyToClipboard('raw')}
+                      className="btn-small"
+                    >
+                      Raw
+                    </button>
+                    <button 
+                      onClick={() => copyToClipboard('js')}
+                      className="btn-small"
+                    >
+                      JavaScript
+                    </button>
+                    <button 
+                      onClick={() => copyToClipboard('python')}
+                      className="btn-small"
+                    >
+                      Python
+                    </button>
+                    <button 
+                      onClick={() => copyToClipboard('php')}
+                      className="btn-small"
+                    >
+                      PHP
+                    </button>
                     
-                    <div className="mb-2">
-                      <div className="text-sm text-muted mb-1">Full Match:</div>
-                      <div className="code-block text-success">
-                        {match.fullMatch}
-                      </div>
-                    </div>
-                    
-                    {match.groups.length > 0 && (
-                      <div>
-                        <div className="text-sm text-muted mb-1">Capture Groups:</div>
-                        <div className="space-y-2">
-                          {match.groups.map((group, groupIndex) => (
-                            <div key={groupIndex} className="code-block text-info">
-                              Group {groupIndex + 1}: {group}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
+                    {copySuccess && (
+                      <span className="text-success text-xs ml-2 font-medium" role="status" aria-live="polite">{copySuccess}</span>
                     )}
                   </div>
-                ))}
+                )}
               </div>
+              
+              {error && (
+                <div id="pattern-error" className="text-danger text-sm mt-2" role="alert">
+                  Error: {error}
+                </div>
+              )}
+            </section>
+            
+            {/* Examples and Saved Patterns */}
+            {showExamples && (
+              <section id="examples-section" className="card animate-fadeIn" aria-labelledby="examples-title">
+                <h2 id="examples-title" className="text-xl font-semibold mb-3">Example Patterns</h2>
+                <div className="grid grid-cols-1 gap-2">
+                  {EXAMPLE_PATTERNS.map((example, index) => (
+                    <div key={index} className="list-item">
+                      <div>
+                        <div className="font-medium">{example.name}</div>
+                        <div className="text-sm text-muted font-mono">{example.pattern}</div>
+                      </div>
+                      <button 
+                        onClick={() => loadPattern(example)}
+                        className="btn btn-primary"
+                        aria-label={`Load ${example.name} pattern`}
+                      >
+                        Load
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                {savedPatterns.length > 0 && (
+                  <>
+                    <h2 id="saved-patterns-title" className="text-xl font-semibold mt-6 mb-3">Your Saved Patterns</h2>
+                    <div className="grid grid-cols-1 gap-2" aria-labelledby="saved-patterns-title">
+                      {savedPatterns.map((saved, index) => (
+                        <div key={index} className="list-item">
+                          <div>
+                            <div className="font-medium">{saved.name}</div>
+                            <div className="text-sm text-muted font-mono">{saved.pattern}</div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => loadPattern(saved)}
+                              className="btn btn-primary"
+                              aria-label={`Load ${saved.name} pattern`}
+                            >
+                              Load
+                            </button>
+                            <button 
+                              onClick={() => deletePattern(index)}
+                              className="btn btn-danger"
+                              aria-label={`Delete ${saved.name} pattern`}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </section>
             )}
+            
+            {/* Test String Input */}
+            <section className="card" aria-labelledby="test-string-title">
+              <label id="test-string-title" htmlFor="testString" className="block text-sm font-medium mb-1">
+                Test String
+              </label>
+              <textarea
+                id="testString"
+                value={testString}
+                onChange={handleTestStringChange}
+                placeholder="Enter text to test against the regex..."
+                rows={5}
+                className="input-field w-full"
+                ref={testStringInputRef}
+              />
+            </section>
+            
+            {/* Highlighted Text */}
+            {testString && (
+              <section className="card animate-fadeIn" aria-labelledby="highlighted-title">
+                <h2 id="highlighted-title" className="text-xl font-semibold mb-3">Highlighted Matches</h2>
+                <div 
+                  className="bg-input p-3 rounded whitespace-pre-wrap font-mono"
+                  dangerouslySetInnerHTML={{ __html: highlightedText }}
+                  aria-live="polite"
+                  tabIndex={0}
+                />
+              </section>
+            )}
+            
+            {/* Results */}
+            <section className="card" aria-labelledby="results-title">
+              <h2 id="results-title" className="text-xl font-semibold mb-3">Results</h2>
+              
+              {matches.length === 0 ? (
+                <p className="text-muted" aria-live="polite">No matches found</p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="text-sm text-secondary mb-2" aria-live="polite">
+                    Found {matches.length} match{matches.length !== 1 ? "es" : ""}
+                  </div>
+                  
+                  <ul className="space-y-4 list-none p-0">
+                    {matches.map((match, index) => (
+                      <li key={index} className="result-item">
+                        <div className="flex justify-between mb-2">
+                          <span className="font-medium">Match {index + 1}</span>
+                          <span className="text-sm text-muted">Index: {match.index}</span>
+                        </div>
+                        
+                        <div className="mb-2">
+                          <div className="text-sm text-muted mb-1">Full Match:</div>
+                          <div className="code-block text-success">
+                            {match.fullMatch}
+                          </div>
+                        </div>
+                        
+                        {match.groups.length > 0 && (
+                          <div>
+                            <div className="text-sm text-muted mb-1">Capture Groups:</div>
+                            <div className="space-y-2">
+                              {match.groups.map((group, groupIndex) => (
+                                <div key={groupIndex} className="code-block text-info">
+                                  Group {groupIndex + 1}: {group}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </section>
           </div>
-        </div>
-        
-        {/* Regex Cheat Sheet */}
-        <div className="card">
-          <h2 className="text-xl font-semibold mb-3">Regex Cheat Sheet</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div>
-              <h3 className="font-medium text-info mb-1">Character Classes</h3>
-              <ul className="space-y-1">
-                <li><code className="code-inline">\d</code> - Digit (0-9)</li>
-                <li><code className="code-inline">\w</code> - Word character (a-z, A-Z, 0-9, _)</li>
-                <li><code className="code-inline">\s</code> - Whitespace</li>
-                <li><code className="code-inline">.</code> - Any character except newline</li>
-              </ul>
+          
+          {/* Regex Cheat Sheet */}
+          <section className="card" aria-labelledby="cheatsheet-title">
+            <h2 id="cheatsheet-title" className="text-xl font-semibold mb-3">Regex Cheat Sheet</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <h3 className="font-medium text-info mb-1">Character Classes</h3>
+                <ul className="space-y-1">
+                  <li><code className="code-inline">\d</code> - Digit (0-9)</li>
+                  <li><code className="code-inline">\w</code> - Word character (a-z, A-Z, 0-9, _)</li>
+                  <li><code className="code-inline">\s</code> - Whitespace</li>
+                  <li><code className="code-inline">.</code> - Any character except newline</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium text-info mb-1">Quantifiers</h3>
+                <ul className="space-y-1">
+                  <li><code className="code-inline">*</code> - 0 or more</li>
+                  <li><code className="code-inline">+</code> - 1 or more</li>
+                  <li><code className="code-inline">?</code> - 0 or 1</li>
+                  <li><code className="code-inline">{"{n}"}</code> - Exactly n times</li>
+                  <li><code className="code-inline">{"{n,m}"}</code> - Between n and m times</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium text-info mb-1">Flags</h3>
+                <ul className="space-y-1">
+                  <li><code className="code-inline">g</code> - Global (find all matches)</li>
+                  <li><code className="code-inline">i</code> - Case-insensitive</li>
+                  <li><code className="code-inline">m</code> - Multiline</li>
+                  <li><code className="code-inline">s</code> - Dot matches newlines</li>
+                </ul>
+              </div>
+              <div>
+                <h3 className="font-medium text-info mb-1">Groups & Assertions</h3>
+                <ul className="space-y-1">
+                  <li><code className="code-inline">(abc)</code> - Capture group</li>
+                  <li><code className="code-inline">(?:abc)</code> - Non-capturing group</li>
+                  <li><code className="code-inline">^</code> - Start of string/line</li>
+                  <li><code className="code-inline">$</code> - End of string/line</li>
+                  <li><code className="code-inline">\b</code> - Word boundary</li>
+                </ul>
+              </div>
             </div>
-            <div>
-              <h3 className="font-medium text-info mb-1">Quantifiers</h3>
-              <ul className="space-y-1">
-                <li><code className="code-inline">*</code> - 0 or more</li>
-                <li><code className="code-inline">+</code> - 1 or more</li>
-                <li><code className="code-inline">?</code> - 0 or 1</li>
-                <li><code className="code-inline">{"{n}"}</code> - Exactly n times</li>
-                <li><code className="code-inline">{"{n,m}"}</code> - Between n and m times</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-medium text-info mb-1">Flags</h3>
-              <ul className="space-y-1">
-                <li><code className="code-inline">g</code> - Global (find all matches)</li>
-                <li><code className="code-inline">i</code> - Case-insensitive</li>
-                <li><code className="code-inline">m</code> - Multiline</li>
-                <li><code className="code-inline">s</code> - Dot matches newlines</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-medium text-info mb-1">Groups & Assertions</h3>
-              <ul className="space-y-1">
-                <li><code className="code-inline">(abc)</code> - Capture group</li>
-                <li><code className="code-inline">(?:abc)</code> - Non-capturing group</li>
-                <li><code className="code-inline">^</code> - Start of string/line</li>
-                <li><code className="code-inline">$</code> - End of string/line</li>
-                <li><code className="code-inline">\b</code> - Word boundary</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+          </section>
+        </main>
         
         {/* Footer */}
         <footer className="mt-8 text-center text-sm text-muted">
